@@ -1,70 +1,59 @@
 import React, { useState } from 'react';
-import './App.css'
 
 function App() {
-  const [question, setQuestion] = useState(' ');
-  const [message1, setMessage1] = useState(' ');
-  const [message2, setMessage2] = useState(' ');
-  const [response, setResponse] = useState(' ');
+  const [question, setField1] = useState('');
+  const [userUnderstanding, setField2] = useState('');
+  const [userConfusion, setField3] = useState('');
 
-  const handleSubmitQuestion = (e) => {
-    fetch('http://localhost:3000/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ question }),
-    })
-    .then((res) => res.json())
-    .then((data) => setResponse(data.question));
-  };
-  
-  const handleSubmitMessage1 = (e) => {
-    fetch('http://localhost:3000/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message1 }),
-    })
-    .then((res) => res.json())
-    .then((data) => setResponse(data.message1));
-  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Form submission logic here
+    console.log(`Field 1: ${question}, Field 2: ${userUnderstanding}, Field 3: ${userConfusion}`);
 
-  const handleSubmitMessage2 = (e) => {
-    fetch('http://localhost:3000/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message2 }),
-    })
-    .then((res) => res.json())
-    .then((data) => setResponse(data.message2));
+    // Clear the form fields
+    setField1('');
+    setField2('');
+    setField3('');
   };
 
   return (
     <div className="App">
-      <form onSubmit={handleSubmitQuestion}>
-        <textarea value={question} 
-        onChange={(e) => setQuestion(e.target.value)}>
-        </textarea>
-        <button type="submit">Submit</button>
-      </form>
-      <form onSubmit={handleSubmitMessage1}>
-        <textarea value={message1} 
-        onChange={(e) => setMessage1(e.target.value)}>
-        </textarea>
-        <button type="submit">Submit</button>
-      </form>
-      <form onSubmit={handleSubmitMessage2}>
-        <textarea value={message2} 
-        onChange={(e) => setMessage2(e.target.value)}>
-        </textarea>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Question:
+          <input
+            type="text"
+            value={question}
+            onChange={(e) => setField1(e.target.value)}
+            style={{ width:"300px" }}
+          />
+        </label>
+
+        <label>
+          What I Understand:
+          <input
+            type="text"
+            value={userUnderstanding}
+            onChange={(e) => setField2(e.target.value)}
+            style={{ width:"300px" }}
+          />
+        </label>
+
+        <label>
+          What I'm Confused About:
+          <input
+            type="text"
+            value={userConfusion}
+            onChange={(e) => setField3(e.target.value)}
+            style={{ width:"300px" }}
+          />
+        </label>
+
         <button type="submit">Submit</button>
       </form>
     </div>
-  )
+  );
 }
 
 export default App;
