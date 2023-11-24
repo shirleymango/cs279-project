@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 function App() {
-  const [question, setField1] = useState('');
-  const [userUnderstanding, setField2] = useState('');
-  const [userConfusion, setField3] = useState('');
+  const [question, setField1] = useState(''); // 'question' variable stores 'Question' text input field
+  const [userUnderstanding, setField2] = useState(''); // 'userUnderstanding' variable stores 'What I Understand' text input field
+  const [userConfusion, setField3] = useState(''); // 'userConfusion' stores 'What I'm Confused About' text input field
 
   const handleSubmit = (e) => {
     e.preventDefault();
