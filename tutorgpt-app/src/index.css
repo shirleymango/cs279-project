@@ -24,3 +24,7 @@ code {
   display: flex;
   flex-direction: column;
 }
+
+.underline {
+  text-decoration: underline;
+}

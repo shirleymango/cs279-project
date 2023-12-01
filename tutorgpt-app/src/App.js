@@ -144,7 +144,7 @@ function App() {
             height: "400px",
           }}
         >
-          <label htmlFor="model-log">TutorGPT Log:</label>
+          <label htmlFor="model-log" class="underline">TutorGPT Log:</label>
           <div
             class="flex-container"
             id="modelLog"
