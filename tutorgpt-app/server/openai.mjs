@@ -36,9 +36,8 @@ async function deleteAssistant(id) {
 
 // Asking a single question, testing API
 async function askSingleQuestion() {
-  const assistant = await openai.beta.assistants.retrieve(
-    "asst_bBhti5FBVBTmatJI4Nr8LJGg"
-  );
+  const myAssistantId = process.env.assistant_id;
+  const assistant = await openai.beta.assistants.retrieve(myAssistantId);
 
   const thread = await openai.beta.threads.create();
 
@@ -81,9 +80,8 @@ async function askSingleQuestion() {
 
 // Chatbot form question asking
 async function commandline_chatbot() {
-  const assistant = await openai.beta.assistants.retrieve(
-    "asst_bBhti5FBVBTmatJI4Nr8LJGg"
-  );
+  const myAssistantId = process.env.assistant_id;
+  const assistant = await openai.beta.assistants.retrieve(myAssistantId);
 
   const thread = await openai.beta.threads.create();
 
@@ -126,16 +124,23 @@ export async function callOpenAI(
   question,
   userUnderstanding,
   userConfusion,
-  uploadedPdf
+  uploadedPdf,
+  threadId
 ) {
   // Prompt constructed based on user input
   const prompt = `This is the question that I have: ${question}\nThis is what my current understanding is: ${userUnderstanding}\n This is the part I'm specifically confused about: ${userConfusion}\n Please give me a hint to help me answer my question based on my current understanding and confusion.`;
 
   // open thread with OpenAI Assistant API
-  const assistant = await openai.beta.assistants.retrieve(
-    "asst_bBhti5FBVBTmatJI4Nr8LJGg"
-  );
-  const thread = await openai.beta.threads.create();
+  const myAssistantId = process.env.assistant_id;
+  const assistant = await openai.beta.assistants.retrieve(myAssistantId);
+
+  let thread;
+  // start new thread or append to existing thread
+  if (threadId && threadId !== "null") {
+    thread = await openai.beta.threads.retrieve(threadId);
+  } else {
+    thread = await openai.beta.threads.create();
+  }
   await openai.beta.threads.messages.create(thread.id, {
     role: "user",
     content: prompt,
@@ -156,5 +161,8 @@ export async function callOpenAI(
   // return response
   const messages = await openai.beta.threads.messages.list(thread.id);
   const assistantResponse = messages.data[0];
-  return assistantResponse.content[0].text.value;
+  return {
+    response: assistantResponse.content[0].text.value,
+    thread: thread.id,
+  };
 }

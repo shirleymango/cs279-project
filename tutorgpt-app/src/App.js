@@ -9,6 +9,8 @@ function App() {
 
   const [modelResponse, setModelResponse] = useState("");
 
+  const [threadId, setThreadId] = useState(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -17,6 +19,7 @@ function App() {
       formData.append("question", question);
       formData.append("userUnderstanding", userUnderstanding);
       formData.append("userConfusion", userConfusion);
+      formData.append("threadId", threadId);
       if (uploadedPdf) {
         formData.append("file", uploadedPdf);
       }
@@ -31,6 +34,7 @@ function App() {
       const data = await response.json();
       console.log(data);
       if (data && data.response) {
+        setThreadId(data.thread);
         setModelResponse(data.response);
       }
     } catch (error) {

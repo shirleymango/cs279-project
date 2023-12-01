@@ -12,19 +12,20 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post("/api/submit-form", upload.single("file"), async (req, res) => {
   try {
-    const { question, userUnderstanding, userConfusion } = req.body;
+    const { question, userUnderstanding, userConfusion, threadId } = req.body;
     const uploadedPdf = req.file;
 
     // Call the OpenAI API with the form data
-    const response = await callOpenAI(
+    const { response, thread } = await callOpenAI(
       question,
       userUnderstanding,
       userConfusion,
-      uploadedPdf
+      uploadedPdf,
+      threadId
     );
 
     // Send back the response from OpenAI to the frontend
-    res.json({ message: "Success", response: response });
+    res.json({ message: "Success", response: response, thread: thread });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal Server Error", error: error });
