@@ -136,7 +136,7 @@ function App() {
           </form>
         </div>
         {/* Right side (model output) */}
-        <div
+        <div class="box"
           style={{
             width: "50%",
             padding: "20px",
@@ -146,9 +146,11 @@ function App() {
         >
           <label htmlFor="model-log">TutorGPT Log:</label>
           <div
-            class="box"
+            class="flex-container"
             id="modelLog"
             style={{
+              display: "flex",
+              height: "90%",
               width: "100%",
               padding: "5px",
               textAlign: "left",

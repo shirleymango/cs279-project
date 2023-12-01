@@ -19,3 +19,8 @@ code {
 .blue {
   color: blue;
 }
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+}
