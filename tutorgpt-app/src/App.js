@@ -71,7 +71,7 @@ function App() {
         {/* Add any content you want at the top of the page here */}
         <h1>Welcome to TutorGPT</h1>
         <p>
-          (1) Upload a PDF with your class notes or lecture notes to get started
+          <strong class="blue">(1)</strong> Upload a PDF with your class notes or lecture notes to get started
         </p>
         {/* File upload input */}
         <input type="file" accept=".pdf" onChange={handleFileChange} />
@@ -89,7 +89,7 @@ function App() {
         {/* Left side (form for user) */}
         <div style={{ width: "50%", padding: "20px" }}>
           <p>
-            (2) Now, tell us what you need help with, what you understand so far,
+            <strong class="blue">(2)</strong> Now, tell us what you need help with, what you understand so far,
             and what you are confused about.
           </p>
           <form onSubmit={handleSubmit}>
@@ -146,17 +146,19 @@ function App() {
         >
           <label htmlFor="model-log">TutorGPT Log:</label>
           <div
+            class="box"
             id="modelLog"
             style={{
               width: "100%",
               padding: "5px",
+              textAlign: "left",
               verticalAlign: "top",
               lineHeight: "1.5",
             }}
           >
             {chatHistory.map((message, index) => (
               <div key={index} style={{ marginBottom: "10px" }}>
-                <strong>
+                <strong class="blue">
                   {message.role === "TutorGPT" ? "TutorGPT: " : "You: "}
                 </strong>
                 {message.content}
