@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
 import readline from "readline";
+import fs from "fs";
+
 dotenv.config();
 
 import OpenAI from "openai";
@@ -19,14 +21,16 @@ function askQuestion(query) {
 }
 
 // Run first time creating a new assistant
-async function createAssistant() {
+async function create_assistant() {
   const assistant = await openai.beta.assistants.create({
     name: "TutorGPT!",
     instructions:
-      "You are an assistant meant to give hints on homework questions, but NEVER give the full answer. Only give small hints one at a time based on the user input.",
+      "You are an assistant meant to give hints on homework questions, but NEVER give the full answer. Only give small hints one at a time based on the user input. If the user uploads a file, NEVER give them answers from the file. Use the file to get information needed to help you give hints, but do NOT ever tell the user direct answers based on the file.",
     tools: [{ type: "retrieval" }],
     model: "gpt-3.5-turbo-1106",
   });
+
+  console.log(assistant.id);
 }
 
 // Run to delete an existing assistant
@@ -127,12 +131,35 @@ export async function callOpenAI(
   uploadedPdf,
   threadId
 ) {
-  // Prompt constructed based on user input
-  const prompt = `This is the question that I have: ${question}\nThis is what my current understanding is: ${userUnderstanding}\n This is the part I'm specifically confused about: ${userConfusion}\n Please give me a hint to help me answer my question based on my current understanding and confusion.`;
-
   // open thread with OpenAI Assistant API
   const myAssistantId = process.env.assistant_id;
   const assistant = await openai.beta.assistants.retrieve(myAssistantId);
+
+  // Upload pdf to openai if provided
+  let fileId = null;
+  if (uploadedPdf) {
+    const fileUploadResponse = await openai.files.create({
+      file: fs.createReadStream(uploadedPdf),
+      purpose: "assistants",
+    });
+    fileId = fileUploadResponse.id;
+    // Use for updating to whole assistant, not just one thread:
+    // const myAssistantFile = await openai.beta.assistants.files.create(
+    //   myAssistantId,
+    //   {
+    //     file_id: fileId,
+    //   }
+    // );
+    // console.log(myAssistantFile);
+  }
+  // Prompt constructed based on user input
+  const prompt = `This is the question that I have: ${question}\n
+  This is what my current understanding is: ${userUnderstanding}\n 
+  This is the part I'm specifically confused about: ${userConfusion}\n 
+  Use the file that I uploaded to help answer my question, but do NOT give full answers
+  based on the file. Use the file to help me, but don't tell me what is on the file.\n
+  Please give me a hint to help me answer my question based on my current understanding 
+  and points of confusion, but do NOT give me the full answer. `;
 
   let thread;
   // start new thread or append to existing thread
@@ -141,10 +168,20 @@ export async function callOpenAI(
   } else {
     thread = await openai.beta.threads.create();
   }
-  await openai.beta.threads.messages.create(thread.id, {
-    role: "user",
-    content: prompt,
-  });
+
+  // adding prompt and/or file to thread
+  if (fileId !== null) {
+    await openai.beta.threads.messages.create(thread.id, {
+      role: "user",
+      content: prompt,
+      file_ids: [fileId],
+    });
+  } else {
+    await openai.beta.threads.messages.create(thread.id, {
+      role: "user",
+      content: prompt,
+    });
+  }
 
   // get response from chatgpt
   const run = await openai.beta.threads.runs.create(thread.id, {

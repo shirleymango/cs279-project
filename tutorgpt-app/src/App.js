@@ -7,9 +7,17 @@ function App() {
   const [userConfusion, setField3] = useState(""); // 'userConfusion' stores 'What I'm Confused About' text input field
   const [uploadedPdf, setUploadedPdf] = useState(null);
 
-  const [modelResponse, setModelResponse] = useState("");
-
+  const [loading, setLoading] = useState("");
   const [threadId, setThreadId] = useState(null);
+  const [chatHistory, setChatHistory] = useState([
+    {
+      role: "TutorGPT",
+      content: "Welcome to TutorGPT! What can I help you with?",
+    },
+  ]);
+  const addMessageToChatHistory = (newMessage) => {
+    setChatHistory((prevChatHistory) => [...prevChatHistory, newMessage]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,8 +31,8 @@ function App() {
       if (uploadedPdf) {
         formData.append("file", uploadedPdf);
       }
-
-      setModelResponse("Loading...");
+      addMessageToChatHistory({ role: "You", content: question });
+      setLoading("Waiting for response...");
 
       const response = await fetch("/api/submit-form", {
         method: "POST",
@@ -35,7 +43,8 @@ function App() {
       console.log(data);
       if (data && data.response) {
         setThreadId(data.thread);
-        setModelResponse(data.response);
+        setLoading("");
+        addMessageToChatHistory({ role: "TutorGPT", content: data.response });
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -127,22 +136,34 @@ function App() {
           </form>
         </div>
         {/* Right side (model output) */}
-        <div style={{ width: "50%", padding: "20px" }}>
+        <div
+          style={{
+            width: "50%",
+            padding: "20px",
+            overflowY: "scroll",
+            height: "400px",
+          }}
+        >
           <label htmlFor="model-log">TutorGPT Log:</label>
-          <textarea
-            type="text"
+          <div
             id="modelLog"
-            value={modelResponse || "Submit the form to query the model"} // Add state or value as needed
-            readOnly
-            onChange={(e) => {}}
             style={{
               width: "100%",
               padding: "5px",
-              height: "50%",
               verticalAlign: "top",
-              lineHeight: "1",
+              lineHeight: "1.5",
             }}
-          />
+          >
+            {chatHistory.map((message, index) => (
+              <div key={index} style={{ marginBottom: "10px" }}>
+                <strong>
+                  {message.role === "TutorGPT" ? "TutorGPT: " : "You: "}
+                </strong>
+                {message.content}
+              </div>
+            ))}
+            <div>{loading}</div>
+          </div>
         </div>
       </div>
     </div>
