@@ -71,7 +71,7 @@ function App() {
         {/* Add any content you want at the top of the page here */}
         <h1>Welcome to TutorGPT</h1>
         <p>
-          Upload a PDF with your class notes or lecture notes to get started
+          (1) Upload a PDF with your class notes or lecture notes to get started
         </p>
         {/* File upload input */}
         <input type="file" accept=".pdf" onChange={handleFileChange} />
@@ -89,45 +89,45 @@ function App() {
         {/* Left side (form for user) */}
         <div style={{ width: "50%", padding: "20px" }}>
           <p>
-            Now, tell us what you need help with, what you understand so far,
+            (2) Now, tell us what you need help with, what you understand so far,
             and what you are confused about.
           </p>
           <form onSubmit={handleSubmit}>
             <div className="form-question">
               <label htmlFor="question">
-                Question:
+                Question: <br></br>
                 <textarea
                   type="text"
                   id="question"
                   value={question}
                   onChange={(e) => setField1(e.target.value)}
-                  style={{ width: "50%", padding: "5px", height: "50px" }}
+                  style={{ width: "100%", padding: "5px", height: "50px" }}
                 />
               </label>
             </div>
 
             <div className="form-question">
               <label htmlFor="understanding">
-                What I Understand:
+                What I Understand: <br></br>
                 <textarea
                   type="text"
                   id="understanding"
                   value={userUnderstanding}
                   onChange={(e) => setField2(e.target.value)}
-                  style={{ width: "50%", padding: "5px", height: "50px" }}
+                  style={{ width: "100%", padding: "5px", height: "50px" }}
                 />
               </label>
             </div>
 
             <div className="form-question">
               <label htmlFor="confusion">
-                What I'm Confused About:
+                What I'm Confused About: <br></br>
                 <textarea
                   type="text"
                   id="confusion"
                   value={userConfusion}
                   onChange={(e) => setField3(e.target.value)}
-                  style={{ width: "50%", padding: "5px", height: "50px" }}
+                  style={{ width: "100%", padding: "5px", height: "50px" }}
                 />
               </label>
             </div>
